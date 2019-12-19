@@ -467,6 +467,7 @@ public class SqlSessionFactoryBean
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    // idea mybatis与spring整合后，会使用spring中配置的datasource，事务也交给spring来管理
     notNull(dataSource, "Property 'dataSource' is required");
     notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required"); // 默认就创建了
     state((configuration == null && configLocation == null) || !(configuration != null && configLocation != null),
@@ -578,7 +579,8 @@ public class SqlSessionFactoryBean
       }
     }
 
-    // 如果没有配置事务工厂，则默认使用spring提供的事务工厂
+    // idea 如果没有配置事务工厂，则默认使用spring提供的事务工厂, 把事务交给spring管理
+    // idea 其实这个SpringManagedTransactionFactory也是mybatis自己的实现
     targetConfiguration.setEnvironment(new Environment(this.environment,
         this.transactionFactory == null ? new SpringManagedTransactionFactory() : this.transactionFactory,
         this.dataSource));
