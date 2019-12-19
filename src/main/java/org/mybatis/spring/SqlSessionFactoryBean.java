@@ -468,7 +468,7 @@ public class SqlSessionFactoryBean
   @Override
   public void afterPropertiesSet() throws Exception {
     notNull(dataSource, "Property 'dataSource' is required");
-    notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required");
+    notNull(sqlSessionFactoryBuilder, "Property 'sqlSessionFactoryBuilder' is required"); // 默认就创建了
     state((configuration == null && configLocation == null) || !(configuration != null && configLocation != null),
         "Property 'configuration' and 'configLocation' can not specified with together");
 
@@ -487,10 +487,11 @@ public class SqlSessionFactoryBean
    *           if configuration is failed
    */
   protected SqlSessionFactory buildSqlSessionFactory() throws Exception {
-
+    // idea final属性可以提前声明，但一旦赋值，就不能修改
     final Configuration targetConfiguration;
 
     XMLConfigBuilder xmlConfigBuilder = null;
+    // 如果有自己但configuration实例
     if (this.configuration != null) {
       targetConfiguration = this.configuration;
       if (targetConfiguration.getVariables() == null) {
@@ -498,6 +499,8 @@ public class SqlSessionFactoryBean
       } else if (this.configurationProperties != null) {
         targetConfiguration.getVariables().putAll(this.configurationProperties);
       }
+
+      // 如果给SqlSessionFactoryBean提供了configLocation属性，就调用XMLConfigBuilder进行解释
     } else if (this.configLocation != null) {
       xmlConfigBuilder = new XMLConfigBuilder(this.configLocation.getInputStream(), null, this.configurationProperties);
       targetConfiguration = xmlConfigBuilder.getConfiguration();
@@ -575,10 +578,12 @@ public class SqlSessionFactoryBean
       }
     }
 
+    // 如果没有配置事务工厂，则默认使用spring提供的事务工厂
     targetConfiguration.setEnvironment(new Environment(this.environment,
         this.transactionFactory == null ? new SpringManagedTransactionFactory() : this.transactionFactory,
         this.dataSource));
 
+    // idea 处理所有mapper接口
     if (this.mapperLocations != null) {
       if (this.mapperLocations.length == 0) {
         LOGGER.warn(() -> "Property 'mapperLocations' was specified but matching resources are not found.");
@@ -588,6 +593,7 @@ public class SqlSessionFactoryBean
             continue;
           }
           try {
+            // mist mapper的配置应该类似于'classpath*:/com/mybatis/*Mapper.xml'，这里是借用了spring的resource实现类加载？
             XMLMapperBuilder xmlMapperBuilder = new XMLMapperBuilder(mapperLocation.getInputStream(),
                 targetConfiguration, mapperLocation.toString(), targetConfiguration.getSqlFragments());
             xmlMapperBuilder.parse();
