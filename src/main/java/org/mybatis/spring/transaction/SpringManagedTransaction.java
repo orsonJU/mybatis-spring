@@ -64,7 +64,7 @@ public class SpringManagedTransaction implements Transaction {
   @Override
   public Connection getConnection() throws SQLException {
     if (this.connection == null) {
-      // 调用openConnection方法，进入spring jdbc的代码
+      // idea 调用openConnection方法，进入spring jdbc的代码
       openConnection();
     }
     return this.connection;

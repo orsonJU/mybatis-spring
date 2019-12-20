@@ -36,6 +36,7 @@ public class SpringManagedTransactionFactory implements TransactionFactory {
    */
   @Override
   public Transaction newTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
+    // idea 这里是重点，mybatis-spring是如何从spring的事务管理中开启一个新的事务的
     return new SpringManagedTransaction(dataSource);
   }
 
