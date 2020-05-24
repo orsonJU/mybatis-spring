@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Import;
 /**
  * Use this annotation to register MyBatis mapper interfaces when using Java Config. It performs when same work as
  * {@link MapperScannerConfigurer} via {@link MapperScannerRegistrar}.
- * 
+ *
  * <p>Either {@link #basePackageClasses} or {@link #basePackages} (or its alias
  * {@link #value}) may be specified to define specific packages to scan.
  * Since 2.0.4, If specific packages are not defined, scanning will occur from
@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
  * <p>
  * Configuration example:
  * </p>
- * 
+ *
  * <pre class="code">
  * &#064;Configuration
  * &#064;MapperScan("org.mybatis.spring.sample.mapper")
@@ -75,6 +75,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
+// 实现该接口后，会传递给ImportBeanDefinitionRegistrar#registerBeanDefinitions方法，可以实现该接口来处理自己的注解
 @Import(MapperScannerRegistrar.class)
 @Repeatable(MapperScans.class)
 public @interface MapperScan {
@@ -165,7 +166,7 @@ public @interface MapperScan {
    * <p>
    * Default is {@code false}.
    * </p>
-   * 
+   *
    * @return set {@code true} to enable lazy initialization
    * @since 2.0.2
    */

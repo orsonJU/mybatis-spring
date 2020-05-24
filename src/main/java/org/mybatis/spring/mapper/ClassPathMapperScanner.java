@@ -45,7 +45,7 @@ import java.util.Set;
  *
  * @author Hunter Presnall
  * @author Eduardo Macarron
- * 
+ *
  * @see MapperFactoryBean
  * @since 1.2.0
  */
@@ -160,12 +160,13 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
       acceptAllInterfaces = false;
     }
 
+    // idea 默认接受所有的class
     if (acceptAllInterfaces) {
       // default include filter that accepts all classes
       addIncludeFilter((metadataReader, metadataReaderFactory) -> true);
     }
 
-    // exclude package-info.java
+    // exclude package-info.java, idea 过滤掉*.package-info
     addExcludeFilter((metadataReader, metadataReaderFactory) -> {
       String className = metadataReader.getClassMetadata().getClassName();
       return className.endsWith("package-info");
@@ -184,6 +185,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
       LOGGER.warn(() -> "No MyBatis mapper was found in '" + Arrays.toString(basePackages)
           + "' package. Please check your configuration.");
     } else {
+      // @main mehtod
       processBeanDefinitions(beanDefinitions);
     }
 
@@ -200,6 +202,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
       // the mapper interface is the original class of the bean
       // but, the actual class of the bean is MapperFactoryBean
+      // 把所有mapper的实例对象全部更换成MapperFactoryBean
       definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName); // issue #59
       definition.setBeanClass(this.mapperFactoryBeanClass);
 
@@ -241,6 +244,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
   }
 
   /**
+   * idea 重写了自己的isCandidateComponent方法，实现只扫描接口
    * {@inheritDoc}
    */
   @Override
@@ -249,6 +253,8 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
   }
 
   /**
+   * idea 重写了checkCandidate方法来打印日志
+   * 因为创建Mapper有多中方式，在xml中定义MapperFactoryBean，或者扫描接口
    * {@inheritDoc}
    */
   @Override
